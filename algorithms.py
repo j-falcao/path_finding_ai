@@ -48,6 +48,7 @@ def uniform_cost_search(map: Map, start: str, goal: str):
     return float('inf'), []
 
 
+
 def depth_limited_search(map: Map, start: str, goal: str, limit: int):
     """
     Finds a path between two cities using Depth-Limited Search.
@@ -97,3 +98,55 @@ def depth_limited_search(map: Map, start: str, goal: str, limit: int):
         return ("cutoff" if cutoff_occurred else "failure"), float("inf"), []
 
     return recursive_dls(start, goal, limit, [start], 0, set())
+
+
+
+def astar_search(map: Map, start: str, goal: str, heuristic: dict):
+    """
+    Finds the lowest-cost path between two cities using A* Search.
+
+    Parameters:
+        map        (Map) : Your Map instance with edges already populated
+        start      (str) : Name of the starting city
+        goal       (str) : Name of the destination city
+        heuristic  (dict): Estimated cost from each city to the goal
+                           e.g. {"Lisboa": 245, "Porto": 497, "Faro": 0, ...}
+
+    Returns:
+        A tuple (cost, path) where:
+            cost (int | float): Total distance of the optimal path
+            path (list[str])  : Ordered list of cities from start to goal
+        Returns (inf, []) if no path exists.
+    """
+
+    def h(city):
+        """ Heuristic lookup — defaults to 0 if city not in dictionary. """
+        return heuristic.get(city, 0)
+
+    # Priority queue entries: (f = g + h, g = real cost, current_city, path)
+    heap = [(0 + h(start), 0, start, [start])]
+
+    # Best known g(n) for each city — only update if we find a cheaper route
+    best_g = {start: 0}
+
+    while heap:
+        # f is unpacked as _ because it only serves as the heap's sorting key —
+        # once the node is popped, the priority is irrelevant and only the real
+        # cost g is used for all further calculations.
+        _, g, current, path = heapq.heappop(heap)
+
+        # If we popped an outdated entry, skip it
+        if g > best_g.get(current, float("inf")):
+            continue
+
+        if current == goal:
+            return g, path
+
+        for neighbor, edge_cost in map.neighbors(current).items():
+            new_g = g + edge_cost
+            if new_g < best_g.get(neighbor, float("inf")):
+                best_g[neighbor] = new_g
+                new_f = new_g + h(neighbor)
+                heapq.heappush(heap, (new_f, new_g, neighbor, path + [neighbor]))
+
+    return float("inf"), []

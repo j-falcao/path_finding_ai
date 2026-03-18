@@ -1,5 +1,5 @@
 import json
-from algorithms import depth_limited_search, uniform_cost_search
+from algorithms import astar_search, depth_limited_search, uniform_cost_search
 from map import Map
 
 with open("map.json") as f:
@@ -38,10 +38,10 @@ print(f"Path   : {' → '.join(path)}")
 
 # HEURISTIC
 
-""" 
 with open("heuristic.json") as f:
     data = json.load(f)
 
-for city, heuristic in data.items():
-    print(f"{city}: {heuristic}")
-"""
+cost, path = astar_search(m, "Aveiro", "Faro", data)
+
+print(f"Cost: {cost}")
+print(f"Path: {path}")
