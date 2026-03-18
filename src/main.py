@@ -1,6 +1,6 @@
 import json
-from algorithms import astar_search, depth_limited_search, uniform_cost_search
-from map import Map
+from src.algorithms import astar_search, depth_limited_search, uniform_cost_search
+from src.map import Map
 
 with open("map.json") as f:
     data = json.load(f)

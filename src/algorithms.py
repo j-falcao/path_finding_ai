@@ -1,5 +1,5 @@
 import heapq
-from map import Map
+from src.map import Map
 
 def uniform_cost_search(map: Map, start: str, goal: str):
     """
