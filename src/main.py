@@ -1,8 +1,8 @@
 import json
-from src.algorithms import astar_search, depth_limited_search, uniform_cost_search
-from src.map import Map
+from algorithms import astar_search, depth_limited_search, uniform_cost_search, greedy_best_first_search
+from map import Map
 
-with open("map.json") as f:
+with open("data/map.json") as f:
     data = json.load(f)
 
 m = Map()
@@ -38,10 +38,10 @@ print(f"Path   : {' → '.join(path)}")
 
 # HEURISTIC
 
-with open("heuristic.json") as f:
+with open("data/heuristic.json") as f:
     data = json.load(f)
 
-cost, path = astar_search(m, "Aveiro", "Faro", data)
+cost, path = greedy_best_first_search(m, "Aveiro", "Faro", data)
 
 print(f"Cost: {cost}")
 print(f"Path: {path}")

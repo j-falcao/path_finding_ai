@@ -1,5 +1,5 @@
 import heapq
-from src.map import Map
+from map import Map
 
 def uniform_cost_search(map: Map, start: str, goal: str):
     """
@@ -148,5 +148,78 @@ def astar_search(map: Map, start: str, goal: str, heuristic: dict):
                 best_g[neighbor] = new_g
                 new_f = new_g + h(neighbor)
                 heapq.heappush(heap, (new_f, new_g, neighbor, path + [neighbor]))
+
+    return float("inf"), []
+
+
+
+def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
+    """
+    Finds a path between two cities using Greedy Best-First Search
+    (Procura Sôfrega).
+
+    Unlike A*, this algorithm only uses the heuristic h(n) to prioritize
+    nodes — it completely ignores the real accumulated cost g(n).
+    This makes it faster in practice but NOT guaranteed to find the
+    optimal (cheapest) path; it simply chases whatever looks closest
+    to the goal according to the heuristic.
+
+    f(n) = h(n)           # Greedy — only the heuristic matters
+    f(n) = g(n) + h(n)    # A*     — balances real cost + heuristic
+
+    Parameters:
+        map        (Map) : Your Map instance with edges already populated
+        start      (str) : Name of the starting city
+        goal       (str) : Name of the destination city
+        heuristic  (dict): Estimated cost from each city to the goal
+                           e.g. {"Lisboa": 245, "Porto": 497, "Faro": 0, ...}
+
+    Returns:
+        A tuple (cost, path) where:
+            cost (int | float): Total distance of the path found (not necessarily optimal)
+            path (list[str])  : Ordered list of cities from start to goal
+        Returns (inf, []) if no path exists.
+    """
+
+    def h(city):
+        """
+        Heuristic function h(n).
+        This is the ONLY thing that drives priority in procura sôfrega —
+        the real cost g(n) plays no role in node selection whatsoever.
+        """
+        return heuristic.get(city, 0)
+
+    # Heap entries: (h(n), real cost so far, current city, path)
+    # Note: unlike A*, we sort purely by h(n), not by g+h.
+    # We still track the real cost so we can report it at the end,
+    # but it never influences which node gets expanded next.
+    heap = [(h(start), 0, start, [start])]
+
+    # Visited set — since we don't track best_g, we just make sure
+    # we never expand the same city twice (simple cycle prevention)
+    visited = set()
+
+    while heap:
+        # h is unpacked as _ because once popped it serves no further purpose —
+        # it was only used as the heap's sorting key to pick the most
+        # promising node. The real cost g is what we carry forward.
+        _, g, current, path = heapq.heappop(heap)
+
+        if current in visited:
+            continue
+        visited.add(current)
+
+        # Goal check — same as standard A*, we check on pop not on push
+        if current == goal:
+            return g, path
+
+        for neighbor, edge_cost in map.neighbors(current).items():
+            if neighbor not in visited:
+                heapq.heappush(heap, (
+                    h(neighbor),        # priority is ONLY the heuristic
+                    g + edge_cost,      # real cost tracked but not used for priority
+                    neighbor,
+                    path + [neighbor]
+                ))
 
     return float("inf"), []
