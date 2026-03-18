@@ -46,3 +46,54 @@ def uniform_cost_search(map: Map, start: str, goal: str):
 
     # No path found
     return float('inf'), []
+
+
+def depth_limited_search(map: Map, start: str, goal: str, limit: int):
+    """
+    Finds a path between two cities using Depth-Limited Search.
+
+    Parameters:
+        map   (Map): Your Map instance with edges already populated
+        start (str): Name of the starting city
+        goal  (str): Name of the destination city
+        limit (int): Maximum depth to explore
+
+    Returns:
+        A tuple (status, cost, path) where:
+            status (str)          : "found", "cutoff", or "failure"
+            cost   (int | float)  : Total distance if found, inf otherwise
+            path   (list[str])    : Ordered list of cities, empty if not found
+    """
+
+    def recursive_dls(current, goal, limit, path, cost, visited):
+        # Goal check
+        if current == goal:
+            return "found", cost, path
+
+        # Depth limit reached — signal cutoff (goal might exist deeper)
+        if limit == 0:
+            return "cutoff", float("inf"), []
+
+        cutoff_occurred = False
+        visited.add(current)
+
+        for neighbor, edge_cost in map.neighbors(current).items():
+            if neighbor not in visited:
+                result, total_cost, total_path = recursive_dls(
+                    neighbor,
+                    goal,
+                    limit - 1,          # decrease remaining depth
+                    path + [neighbor],
+                    cost + edge_cost,
+                    visited.copy()      # copy so sibling branches don't interfere
+                )
+
+                if result == "found":
+                    return "found", total_cost, total_path
+                elif result == "cutoff":
+                    cutoff_occurred = True  # remember a cutoff happened
+
+        # Distinguish between cutoff (maybe deeper) and full failure
+        return ("cutoff" if cutoff_occurred else "failure"), float("inf"), []
+
+    return recursive_dls(start, goal, limit, [start], 0, set())
