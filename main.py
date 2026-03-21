@@ -37,7 +37,7 @@ print(f"Path   : {' → '.join(path)}")
 
 
 # HEURISTIC
-
+""" 
 with open("data/heuristic.json") as f:
     data = json.load(f)
 
@@ -45,3 +45,5 @@ cost, path = greedy_best_first_search(m, "Aveiro", "Faro", data)
 
 print(f"Cost: {cost}")
 print(f"Path: {path}")
+""" 
+
