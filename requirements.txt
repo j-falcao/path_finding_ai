@@ -1,6 +1,9 @@
-flask
+fastapi
+uvicorn
 pytesseract
 opencv-python
 Pillow
-requests
 numpy
+python-multipart
+requests
+networkx
