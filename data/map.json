@@ -1,62 +1,57 @@
 {
-  "Aveiro": {
-    "Porto": 68,
-    "Viseu": 95,
-    "Coimbra": 68,
-    "Leiria": 115
-  },
-  "Braga": {
-    "Viana do Castelo": 48,
-    "Vila Real": 106,
-    "Porto": 53
-  },
-  "Bragança": {
-    "Vila Real": 137,
-    "Guarda": 202
-  },
-  "Beja": {
-    "Évora": 78,
-    "Faro": 152,
-    "Setúbal": 142
-  },
-  "Castelo Branco": {
-    "Coimbra": 159,
-    "Guarda": 106,
-    "Portalegre": 80,
-    "Évora": 203
-  },
-  "Coimbra": {
-    "Viseu": 96,
-    "Leiria": 67
-  },
-  "Évora": {
-    "Lisboa": 150,
-    "Santarém": 117,
-    "Portalegre": 131,
-    "Setúbal": 103
-  },
-  "Faro": {
-    "Setúbal": 249,
-    "Lisboa": 299
-  },
-  "Guarda": {
-    "Vila Real": 157,
-    "Viseu": 85
-  },
-  "Leiria": {
-    "Lisboa": 129,
-    "Santarém": 70
-  },
-  "Lisboa": {
-    "Santarém": 78,
-    "Setúbal": 50
-  },
-  "Porto": {
-    "Viana do Castelo": 71,
-    "Vila Real": 116,
-    "Viseu": 133
-  },
-  "Vila Real": {
-    "Viseu": 110
-  }
+  "elements": [
+    { "data": { "id": "Aveiro", "label": "Aveiro" } },
+    { "data": { "id": "Braga", "label": "Braga" } },
+    { "data": { "id": "Bragança", "label": "Bragança" } },
+    { "data": { "id": "Beja", "label": "Beja" } },
+    { "data": { "id": "Castelo Branco", "label": "Castelo Branco" } },
+    { "data": { "id": "Coimbra", "label": "Coimbra" } },
+    { "data": { "id": "Évora", "label": "Évora" } },
+    { "data": { "id": "Faro", "label": "Faro" } },
+    { "data": { "id": "Guarda", "label": "Guarda" } },
+    { "data": { "id": "Leiria", "label": "Leiria" } },
+    { "data": { "id": "Lisboa", "label": "Lisboa" } },
+    { "data": { "id": "Portalegre", "label": "Portalegre" } },
+    { "data": { "id": "Porto", "label": "Porto" } },
+    { "data": { "id": "Santarém", "label": "Santarém" } },
+    { "data": { "id": "Setúbal", "label": "Setúbal" } },
+    { "data": { "id": "Viana do Castelo", "label": "Viana do Castelo" } },
+    { "data": { "id": "Vila Real", "label": "Vila Real" } },
+    { "data": { "id": "Viseu", "label": "Viseu" } },
+
+    { "data": { "id": "Aveiro-Porto", "source": "Aveiro", "target": "Porto", "weight": 68 } },
+    { "data": { "id": "Aveiro-Viseu", "source": "Aveiro", "target": "Viseu", "weight": 95 } },
+    { "data": { "id": "Aveiro-Coimbra", "source": "Aveiro", "target": "Coimbra", "weight": 68 } },
+    { "data": { "id": "Aveiro-Leiria", "source": "Aveiro", "target": "Leiria", "weight": 115 } },
+    { "data": { "id": "Braga-Viana do Castelo", "source": "Braga", "target": "Viana do Castelo", "weight": 48 } },
+    { "data": { "id": "Braga-Vila Real", "source": "Braga", "target": "Vila Real", "weight": 106 } },
+    { "data": { "id": "Braga-Porto", "source": "Braga", "target": "Porto", "weight": 53 } },
+    { "data": { "id": "Bragança-Vila Real", "source": "Bragança", "target": "Vila Real", "weight": 137 } },
+    { "data": { "id": "Bragança-Guarda", "source": "Bragança", "target": "Guarda", "weight": 202 } },
+    { "data": { "id": "Beja-Évora", "source": "Beja", "target": "Évora", "weight": 78 } },
+    { "data": { "id": "Beja-Faro", "source": "Beja", "target": "Faro", "weight": 152 } },
+    { "data": { "id": "Beja-Setúbal", "source": "Beja", "target": "Setúbal", "weight": 142 } },
+    { "data": { "id": "Castelo Branco-Coimbra", "source": "Castelo Branco", "target": "Coimbra", "weight": 159 } },
+    { "data": { "id": "Castelo Branco-Guarda", "source": "Castelo Branco", "target": "Guarda", "weight": 106 } },
+    { "data": { "id": "Castelo Branco-Portalegre", "source": "Castelo Branco", "target": "Portalegre", "weight": 80 } },
+    { "data": { "id": "Castelo Branco-Évora", "source": "Castelo Branco", "target": "Évora", "weight": 203 } },
+    { "data": { "id": "Coimbra-Viseu", "source": "Coimbra", "target": "Viseu", "weight": 96 } },
+    { "data": { "id": "Coimbra-Leiria", "source": "Coimbra", "target": "Leiria", "weight": 67 } },
+    { "data": { "id": "Évora-Lisboa", "source": "Évora", "target": "Lisboa", "weight": 150 } },
+    { "data": { "id": "Évora-Santarém", "source": "Évora", "target": "Santarém", "weight": 117 } },
+    { "data": { "id": "Évora-Portalegre", "source": "Évora", "target": "Portalegre", "weight": 131 } },
+    { "data": { "id": "Évora-Setúbal", "source": "Évora", "target": "Setúbal", "weight": 103 } },
+    { "data": { "id": "Faro-Setúbal", "source": "Faro", "target": "Setúbal", "weight": 249 } },
+    { "data": { "id": "Faro-Lisboa", "source": "Faro", "target": "Lisboa", "weight": 299 } },
+    { "data": { "id": "Guarda-Vila Real", "source": "Guarda", "target": "Vila Real", "weight": 157 } },
+    { "data": { "id": "Guarda-Viseu", "source": "Guarda", "target": "Viseu", "weight": 85 } },
+    { "data": { "id": "Leiria-Lisboa", "source": "Leiria", "target": "Lisboa", "weight": 129 } },
+    { "data": { "id": "Leiria-Santarém", "source": "Leiria", "target": "Santarém", "weight": 70 } },
+    { "data": { "id": "Lisboa-Santarém", "source": "Lisboa", "target": "Santarém", "weight": 78 } },
+    { "data": { "id": "Lisboa-Setúbal", "source": "Lisboa", "target": "Setúbal", "weight": 50 } },
+    { "data": { "id": "Porto-Viana do Castelo", "source": "Porto", "target": "Viana do Castelo", "weight": 71 } },
+    { "data": { "id": "Porto-Vila Real", "source": "Porto", "target": "Vila Real", "weight": 116 } },
+    { "data": { "id": "Porto-Viseu", "source": "Porto", "target": "Viseu", "weight": 133 } },
+    { "data": { "id": "Vila Real-Viseu", "source": "Vila Real", "target": "Viseu", "weight": 110 } }
+  ]
 }

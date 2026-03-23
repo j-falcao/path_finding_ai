@@ -1,4 +1,4 @@
-from networkx import nx
+import json
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,50 +30,38 @@ app.add_middleware(
 
 @app.get("/api/graph")
 def default_graph():
-    G = nx.read_gml('data/map.gml')
-
-    # Nodes
-    nodes = [{'data': {'id': str(n), 'label': str(n)}} for n in G.nodes()]
-
-    # Edges with weight
-    edges = []
-    for u, v, attr in G.edges(data=True):
-        edges.append({
-            'data': {
-                'id': f"{u}-{v}",
-                'source': str(u),
-                'target': str(v),
-                'weight': attr.get('weight', 1)  # default to 1 if missing
-            }
-        })
-
-    cy_data = {'nodes': nodes, 'edges': edges}
-    return cy_data
-
-
+    with open("data/map.json") as f:
+        return json.load(f)
 
 class SearchRequest(BaseModel):
-    gml_data: str
+    map_json: str
     start: str
     goal: str
     algorithm: str
     depth: int = 10
     heuristic: dict = {}
 
+class SearchResponse(BaseModel):
+    status: str
+    cost: float
+    path: list    
+
 
 @app.post("/api/search")
 def search(req: SearchRequest):
-    m = Map.from_gml(req.gml_data)
+    m = Map.from_json(req.map_json)
 
     algorithm = ALGORITHMS.get(req.algorithm)
 
     if not algorithm:
         raise HTTPException(400, "Unknown algorithm")
 
-    return algorithm(
+    result = algorithm(
         m,
         req.start,
         req.goal,
         heuristic=req.heuristic,
         depth=req.depth
     )
+
+    return SearchResponse(status=result[0], cost=result[1], path=result[2])
