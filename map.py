@@ -1,3 +1,5 @@
+import networkx as nx
+
 class Map:
     """
     Class that represents a map as a graph using an adjacency list.
@@ -50,3 +52,27 @@ class Map:
         dict: Dictionary of neighbors and their distances
         """
         return self.edges[city]
+    
+    @classmethod
+    def from_gml(cls, gml_string):
+        """
+        Creates a Map instance from a GML string.
+
+        Parameters:
+        gml_string (str): GML graph content
+
+        Returns:
+        Map: populated Map object
+        """
+
+        # Parse the GML string into a NetworkX graph
+        G = nx.parse_gml(gml_string)
+
+        m = cls()
+
+        # Add edges to our Map structure
+        for u, v, data in G.edges(data=True):
+            distance = data.get("distance", data.get("weight", 1))
+            m.add_edge(u, v, distance)
+
+        return m
