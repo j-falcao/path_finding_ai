@@ -1,7 +1,7 @@
 import heapq
 from map import Map
 
-def uniform_cost_search(map: Map, start: str, goal: str):
+def uniform_cost_search(map: Map, start: str, goal: str, heuristic=None, depth=None):
     """
     Finds the lowest-cost path between two cities using Uniform Cost Search.
 
@@ -49,7 +49,7 @@ def uniform_cost_search(map: Map, start: str, goal: str):
 
 
 
-def depth_limited_search(map: Map, start: str, goal: str, limit: int):
+def depth_limited_search(map: Map, start: str, goal: str, heuristic=None, depth: int = 10):
     """
     Finds a path between two cities using Depth-Limited Search.
 
@@ -97,11 +97,11 @@ def depth_limited_search(map: Map, start: str, goal: str, limit: int):
         # Distinguish between cutoff (maybe deeper) and full failure
         return ("cutoff" if cutoff_occurred else "failure"), float("inf"), []
 
-    return recursive_dls(start, goal, limit, [start], 0, set())
+    return recursive_dls(start, goal, depth, [start], 0, set())
 
 
 
-def astar_search(map: Map, start: str, goal: str, heuristic: dict):
+def astar_search(map: Map, start: str, goal: str, heuristic: dict, depth=None):
     """
     Finds the lowest-cost path between two cities using A* Search.
 
@@ -153,7 +153,7 @@ def astar_search(map: Map, start: str, goal: str, heuristic: dict):
 
 
 
-def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
+def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict, depth=None):
     """
     Finds a path between two cities using Greedy Best-First Search
     (Procura Sôfrega).
