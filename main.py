@@ -58,6 +58,7 @@ class SearchRequest(BaseModel):
     goal: str
     algorithm: str
     depth: int = 10
+    heuristic: dict = {}
 
 
 @app.post("/api/search")
