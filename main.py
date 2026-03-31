@@ -34,7 +34,7 @@ def default_graph():
         return json.load(f)
 
 class SearchRequest(BaseModel):
-    map_json: str
+    map_json: dict
     start: str
     goal: str
     algorithm: str
@@ -43,7 +43,7 @@ class SearchRequest(BaseModel):
 
 class SearchResponse(BaseModel):
     status: str
-    cost: float
+    cost: float | None
     path: list    
 
 

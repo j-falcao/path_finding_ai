@@ -96,7 +96,7 @@ def depth_limited_search(map: Map, start: str, goal: str, heuristic=None, depth:
                     cutoff_occurred = True  # remember a cutoff happened
 
         # Distinguish between cutoff (maybe deeper) and full failure
-        return ("cutoff" if cutoff_occurred else "failure"), float("inf"), []
+        return ("cutoff" if cutoff_occurred else "failure"), None, []
 
     return recursive_dls(start, goal, depth, [start], 0, set())
 
