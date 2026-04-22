@@ -1,3 +1,6 @@
+import networkx as nx
+
+
 class Map:
     """
     Class that represents a map as a graph using an adjacency list.
@@ -50,3 +53,16 @@ class Map:
         dict: Dictionary of neighbors and their distances
         """
         return self.edges[city]
+
+
+    @classmethod
+    def from_json(cls, json_data):
+        map_obj = cls()
+        for element in json_data["elements"]:
+            data = element["data"]
+            # Nodes have no "source", skip them
+            if "source" not in data:
+                continue
+            distance = data.get("weight", 1)
+            map_obj.add_edge(data["source"], data["target"], distance)
+        return map_obj

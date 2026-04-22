@@ -1,7 +1,7 @@
 import heapq
 from map import Map
 
-def uniform_cost_search(map: Map, start: str, goal: str):
+def uniform_cost_search(map: Map, start: str, goal: str, heuristic=None, depth=None):
     """
     Finds the lowest-cost path between two cities using Uniform Cost Search.
 
@@ -12,6 +12,7 @@ def uniform_cost_search(map: Map, start: str, goal: str):
 
     Returns:
         A tuple (cost, path) where:
+            status (str)      : "found" or "failure"
             cost (int | float): Total distance of the optimal path
             path (list[str])  : Ordered list of cities from start to goal
         Returns (inf, []) if no path exists.
@@ -36,7 +37,7 @@ def uniform_cost_search(map: Map, start: str, goal: str):
         # Goal check — we only verify on expansion, not on insertion,
         # so the cost is guaranteed to be optimal at this point
         if current == goal:
-            return cost, path
+            return "found", cost, path
 
         # Expand neighbors
         for neighbor, edge_cost in map.neighbors(current).items():
@@ -45,11 +46,11 @@ def uniform_cost_search(map: Map, start: str, goal: str):
                 heapq.heappush(heap, (new_cost, neighbor, path + [neighbor]))
 
     # No path found
-    return float('inf'), []
+    return "failure", float('inf'), []
 
 
 
-def depth_limited_search(map: Map, start: str, goal: str, limit: int):
+def depth_limited_search(map: Map, start: str, goal: str, heuristic=None, depth: int = 10):
     """
     Finds a path between two cities using Depth-Limited Search.
 
@@ -95,13 +96,13 @@ def depth_limited_search(map: Map, start: str, goal: str, limit: int):
                     cutoff_occurred = True  # remember a cutoff happened
 
         # Distinguish between cutoff (maybe deeper) and full failure
-        return ("cutoff" if cutoff_occurred else "failure"), float("inf"), []
+        return ("cutoff" if cutoff_occurred else "failure"), None, []
 
-    return recursive_dls(start, goal, limit, [start], 0, set())
+    return recursive_dls(start, goal, depth, [start], 0, set())
 
 
 
-def astar_search(map: Map, start: str, goal: str, heuristic: dict):
+def astar_search(map: Map, start: str, goal: str, heuristic: dict, depth=None):
     """
     Finds the lowest-cost path between two cities using A* Search.
 
@@ -114,6 +115,7 @@ def astar_search(map: Map, start: str, goal: str, heuristic: dict):
 
     Returns:
         A tuple (cost, path) where:
+            status (str)      : "found" or "failure"
             cost (int | float): Total distance of the optimal path
             path (list[str])  : Ordered list of cities from start to goal
         Returns (inf, []) if no path exists.
@@ -140,7 +142,7 @@ def astar_search(map: Map, start: str, goal: str, heuristic: dict):
             continue
 
         if current == goal:
-            return g, path
+            return "found", g, path
 
         for neighbor, edge_cost in map.neighbors(current).items():
             new_g = g + edge_cost
@@ -149,11 +151,11 @@ def astar_search(map: Map, start: str, goal: str, heuristic: dict):
                 new_f = new_g + h(neighbor)
                 heapq.heappush(heap, (new_f, new_g, neighbor, path + [neighbor]))
 
-    return float("inf"), []
+    return "failure", float("inf"), []
 
 
 
-def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
+def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict, depth=None):
     """
     Finds a path between two cities using Greedy Best-First Search
     (Procura Sôfrega).
@@ -176,6 +178,7 @@ def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
 
     Returns:
         A tuple (cost, path) where:
+            status (str)      : "found" or "failure"
             cost (int | float): Total distance of the path found (not necessarily optimal)
             path (list[str])  : Ordered list of cities from start to goal
         Returns (inf, []) if no path exists.
@@ -211,7 +214,7 @@ def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
 
         # Goal check — same as standard A*, we check on pop not on push
         if current == goal:
-            return g, path
+            return "found", g, path
 
         for neighbor, edge_cost in map.neighbors(current).items():
             if neighbor not in visited:
@@ -222,4 +225,4 @@ def greedy_best_first_search(map: Map, start: str, goal: str, heuristic: dict):
                     path + [neighbor]
                 ))
 
-    return float("inf"), []
+    return "failure", float("inf"), []
