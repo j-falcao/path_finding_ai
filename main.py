@@ -6,6 +6,7 @@ from PIL import Image
 from map import Map
 import pytesseract
 import numpy as np
+import requests
 import json
 import cv2
 import io
@@ -22,7 +23,7 @@ app = FastAPI()
 
 # Allowed origins
 origins = [
-    "http://localhost:5173", # Vue frontend
+    "http://localhost:5173",  # Vue frontend
 ]
 
 app.add_middleware(
@@ -39,6 +40,7 @@ def default_graph():
     with open("data/map.json") as f:
         return json.load(f)
 
+
 class SearchRequest(BaseModel):
     map_json: dict
     start: str
@@ -47,10 +49,11 @@ class SearchRequest(BaseModel):
     depth: int = 10
     heuristic: dict = {}
 
+
 class SearchResponse(BaseModel):
     status: str
     cost: float | None
-    path: list    
+    path: list
 
 
 @app.post("/api/search")
@@ -84,14 +87,17 @@ def preprocess_image(image: np.ndarray):
     blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
     # Threshold (helps OCR a lot)
-    _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    _, thresh = cv2.threshold(
+        blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     return thresh
+
 
 def clean_text(text: str):
     # Keep only alphanumeric (typical for plates)
     text = re.sub(r'[^A-Z0-9]', '', text.upper())
     return text
+
 
 @app.post("/api/ocr/license-plate")
 async def read_license_plate(file: UploadFile = File(...)):
@@ -127,3 +133,31 @@ async def read_license_plate(file: UploadFile = File(...)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+OLLAMA_URL = "http://localhost:11434/api/generate"
+
+
+@app.get("/llm/city-info")
+def city_info(city: str):
+    prompt = f"""Return ONLY a raw JSON object. No explanation, no markdown, no preamble.
+
+Top 3 attractions (one of each category museum|monument|park) in this City: {city}
+
+Format:
+{{
+ "city": "...",
+  "attractions": [
+    {{"name": "...", "description": "...", "category": "..."}},
+    {{"name": "...", "description": "...", "category": "..."}},
+    {{"name": "...", "description": "...", "category": "..."}}
+  ]
+}}"""
+
+    response = requests.post(OLLAMA_URL, json={
+        "model": "llama3",
+        "prompt": prompt,
+        "stream": False
+    })
+
+    return response.json()
