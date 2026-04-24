@@ -1,6 +1,3 @@
-import networkx as nx
-
-
 class Map:
     """
     Class that represents a map as a graph using an adjacency list.

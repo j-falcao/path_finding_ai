@@ -54,16 +54,21 @@ class SearchResponse(BaseModel):
     status: str
     cost: float | None
     path: list
+    iterations: list
 
 
 @app.post("/api/search")
 def search(req: SearchRequest):
+
     m = Map.from_json(req.map_json)
 
     algorithm = ALGORITHMS.get(req.algorithm)
 
     if not algorithm:
-        raise HTTPException(400, "Unknown algorithm")
+        raise HTTPException(
+            status_code=400,
+            detail="Unknown algorithm"
+        )
 
     result = algorithm(
         m,
@@ -73,7 +78,60 @@ def search(req: SearchRequest):
         depth=req.depth
     )
 
-    return SearchResponse(status=result[0], cost=result[1], path=result[2])
+    return SearchResponse(
+        status=result[0],
+        cost=result[1],
+        path=result[2],
+        iterations=result[3]
+    )
+
+
+class DefaultSearchRequest(BaseModel):
+    start: str
+    goal: str
+    algorithm: str
+    depth: int = 10
+
+
+@app.post("/api/defaultMapSearch")
+def default_map_search(req: DefaultSearchRequest):
+
+    # Load default map
+    with open("data/map.json") as f:
+        map = Map.from_json(json.load(f))
+
+
+    # Load heuristic definitions
+    with open("data/heuristic.json") as f:
+        heuristic_data = json.load(f)
+
+
+    # Find matching destination, otherwise {}
+    heuristics = next(
+        (
+            item["heuristics"]
+            for item in heuristic_data
+            if item["destination"] == req.goal
+        ),
+        {}
+    )
+
+    algorithm = ALGORITHMS.get(req.algorithm)
+
+    result = algorithm(
+        map,
+        req.start,
+        req.goal,
+        heuristic=heuristics,
+        depth=req.depth
+    )
+
+    return {
+        "status": result[0],
+        "cost": result[1],
+        "path": result[2],
+        "iterations": result[3]
+    }
 
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -140,19 +198,26 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 
 @app.get("/llm/city-info")
 def city_info(city: str):
-    prompt = f"""Return ONLY a raw JSON object. No explanation, no markdown, no preamble.
+    prompt = f"""
+        You are a JSON API. You MUST follow these rules:
 
-Top 3 attractions (one of each category museum|monument|park) in this City: {city}
+        - Output ONLY valid JSON
+        - No explanations, no text, no markdown
+        - No trailing commas
+        - No comments
 
-Format:
-{{
- "city": "...",
-  "attractions": [
-    {{"name": "...", "description": "...", "category": "..."}},
-    {{"name": "...", "description": "...", "category": "..."}},
-    {{"name": "...", "description": "...", "category": "..."}}
-  ]
-}}"""
+        Schema:
+        {{
+        "city": "string",
+        "attractions": [
+            {{"name": "string", "description": "string", "category": "museum|monument|park"}}
+        ]
+        }}
+
+        Return EXACTLY 3 attractions: one museum, one monument, one park.
+
+        City: {city}
+    """
 
     response = requests.post(OLLAMA_URL, json={
         "model": "llama3",
@@ -160,4 +225,34 @@ Format:
         "stream": False
     })
 
-    return response.json()
+    raw = response.json()["response"]
+    data = fix_json(raw)
+
+    if not data:
+        return {"error": "Still invalid", "raw": raw}
+
+    return data
+
+import json
+import re
+
+def fix_json(raw: str):
+    # Extract JSON block
+    match = re.search(r'\{.*', raw, re.DOTALL)
+    if not match:
+        return None
+
+    candidate = match.group()
+
+    # Count braces
+    open_braces = candidate.count("{")
+    close_braces = candidate.count("}")
+
+    # fix missing closing braces
+    if close_braces < open_braces:
+        candidate += "}" * (open_braces - close_braces)
+
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
