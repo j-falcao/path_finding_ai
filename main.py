@@ -37,7 +37,7 @@ app.add_middleware(
 
 @app.get("/api/graph")
 def default_graph():
-    with open("data/map.json") as f:
+    with open("data/map.json", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -97,12 +97,12 @@ class DefaultSearchRequest(BaseModel):
 def default_map_search(req: DefaultSearchRequest):
 
     # Load default map
-    with open("data/map.json") as f:
+    with open("data/map.json", encoding="utf-8") as f:
         map = Map.from_json(json.load(f))
 
 
     # Load heuristic definitions
-    with open("data/heuristic.json") as f:
+    with open("data/heuristic.json", encoding="utf-8") as f:
         heuristic_data = json.load(f)
 
 
